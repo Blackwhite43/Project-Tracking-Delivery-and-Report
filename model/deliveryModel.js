@@ -20,6 +20,9 @@ const deliverySchema = new mongoose.Schema({
     jumlah_surat_jalan: {
         type: Number
     },
+    jenis_barang: {
+        type: String
+    },
     instruksi: {
         type: String
     },

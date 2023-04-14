@@ -16,6 +16,7 @@ const AppError = require('./utils/appError');
 // -------- REQUIRE ROUTES MODULES -------- //
 const deliveryRoutes = require('./routes/deliveryRoutes');
 const deliveryUpdateRoutes = require('./routes/deliveryUpdateRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 // ----------------- DEFINE EXPRESS AS APP ----------------------- //
 const app = express();
@@ -83,6 +84,7 @@ app.use((req, res, next) => {
 // API Routes is divide it to routes folder
 app.use('/api/v1/delivery', deliveryRoutes);
 app.use('/api/v1/deliveryUpdate', deliveryUpdateRoutes);
+app.use('/api/v1/user', userRoutes);
 
 // HANDLE UNHANDLE ROUTE makesure this route on bot of others route
 app.all('*', (req, res, next) => {
