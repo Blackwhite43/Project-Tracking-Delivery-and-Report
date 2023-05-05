@@ -6,7 +6,6 @@ exports.get_data_plat = catchAsync(async (req, res) => {
     const data = await deliveryModel.find({
         plat_no: req.body.plat_no
     })
-    // console.log(data);
     res.status(200).json({
         status: 'success',
         total: data.length,
@@ -14,9 +13,23 @@ exports.get_data_plat = catchAsync(async (req, res) => {
     })
 })
 
+exports.get_data_plat_home = catchAsync(async (req, res) => {
+    const data = await deliveryUpdateModel.find({
+        status_delivery: {$ne: "Delivered"}
+    });
+    const data2 = await deliveryModel.find({
+        plat_no: req.body.plat_no,
+        delivery_update: data
+    })
+    res.status(200).json({
+        status: 'success',
+        total: data2.length,
+        data: data2
+    })
+})
+
 exports.update_delivery = catchAsync(async (req, res) => {
     const data = await deliveryUpdateModel.findByIdAndUpdate(req.params.id, req.body)
-    // console.log(data);
     res.status(200).json({
         status: 'success'
     })
