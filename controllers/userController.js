@@ -49,3 +49,63 @@ exports.get_update_delivery_data = catchAsync(async (req, res) => {
         data: data2
     })
 })
+
+exports.get_stats = catchAsync(async (req, res) => {
+    const data = await deliveryModel.aggregate([
+        {
+            '$match': {
+                plat_no: req.body.plat_no
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'deliveryupdates', 
+                'localField': 'delivery_update', 
+                'foreignField': '_id', 
+                'as': 'lastStatus'
+            }
+        },
+        {
+            '$addFields': {
+                'status': {
+                    '$first': '$lastStatus.status_delivery'
+                }
+            }
+        },
+        {
+            '$group': {
+                '_id': {
+                    plat_no: '$plat_no',
+                    driver: "$driver",
+                    kenek: "$kenek",
+                }, 
+                'delivered': {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Delivered']}, 1, 0]
+                    }
+                },
+                'ready_for_delivery': {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Ready for Delivery']}, 1, 0]
+                    }
+                },
+                'out_for_delivery': {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Out for Delivery']}, 1, 0]
+                    }
+                },
+                'not_delivered': {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Not Delivered']}, 1, 0]
+                    }
+                }
+            }
+        }
+    ])
+    // console.log(data);
+    res.status(200).json({
+        status: 'success',
+        total: data.length,
+        data: data
+    })
+})
