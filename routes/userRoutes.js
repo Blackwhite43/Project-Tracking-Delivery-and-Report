@@ -10,7 +10,7 @@ router.route('/delivery-data')
 router.route('/delivery-data/:id')
     .get(userController.get_update_delivery_data)
 router.route('/update-delivery/:id')
-    .patch(userController.update_delivery)
+    .patch(userController.uploadProblemsMedia, userController.saveMedia, userController.update_delivery)
 router.route('/stats')
     .post(userController.get_stats)
 module.exports = router;

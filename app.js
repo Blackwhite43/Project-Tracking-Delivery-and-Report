@@ -17,6 +17,7 @@ const AppError = require('./utils/appError');
 const deliveryRoutes = require('./routes/deliveryRoutes');
 const deliveryUpdateRoutes = require('./routes/deliveryUpdateRoutes');
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 // ----------------- DEFINE EXPRESS AS APP ----------------------- //
 const app = express();
@@ -85,6 +86,7 @@ app.use((req, res, next) => {
 app.use('/api/v1/delivery', deliveryRoutes);
 app.use('/api/v1/deliveryUpdate', deliveryUpdateRoutes);
 app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // HANDLE UNHANDLE ROUTE makesure this route on bot of others route
 app.all('*', (req, res, next) => {

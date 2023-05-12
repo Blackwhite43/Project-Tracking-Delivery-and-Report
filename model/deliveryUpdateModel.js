@@ -13,6 +13,13 @@ const deliveryupdateSchema = new mongoose.Schema({
     created_at: {
         type: Date,
         default: new Date
+    },
+    verification: {
+        type: String,
+        enum: {
+            values: ["Verified by Delivery Team", "Pending"]
+        },
+        default: 'Pending'
     }
 })
 const DeliveryUpdate = mongoose.model('deliveryUpdate', deliveryupdateSchema);

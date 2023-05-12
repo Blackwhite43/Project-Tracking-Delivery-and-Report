@@ -1,6 +1,44 @@
+const multer = require('multer');
 const deliveryModel = require('../model/deliveryModel');
 const deliveryUpdateModel = require('../model/deliveryUpdateModel');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
+
+const multerStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './img');
+    },
+    filename: (req, file, cb) => {
+        const ext = file.mimetype.split('/')[1];
+        cb(null, `update-${req.params.id}-${Date.now()}.${ext}`)
+    }
+})
+
+const multerFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image')) {
+        cb(null, true);
+    }
+    else {
+        cb(new AppError('File is not image or video! Please upload only specified files.', 400), false);
+    }
+}
+
+const upload = multer({
+    storage: multerStorage,
+    fileFilter: multerFilter
+})
+
+exports.uploadProblemsMedia = upload.single('photo');
+
+exports.saveMedia = (req, res, next) => {
+    if (!req.file) {
+        return next();
+    }
+    else {
+        req.body.photo = req.file.filename
+        next();
+    }
+}
 
 exports.get_data_plat = catchAsync(async (req, res) => {
     const data = await deliveryModel.find({
@@ -21,6 +59,7 @@ exports.get_data_plat_home = catchAsync(async (req, res) => {
         plat_no: req.body.plat_no,
         delivery_update: data
     })
+    // const temp_plat = window.localStorage.setItem("plat_no", req.body.plat_no);
     res.status(200).json({
         status: 'success',
         total: data2.length,
@@ -29,7 +68,10 @@ exports.get_data_plat_home = catchAsync(async (req, res) => {
 })
 
 exports.update_delivery = catchAsync(async (req, res) => {
-    const data = await deliveryUpdateModel.findByIdAndUpdate(req.params.id, req.body);
+    const data = await deliveryUpdateModel.findByIdAndUpdate(req.params.id, {
+        status_delivery: req.body.status_delivery,
+        photo: req.body.photo
+    });
     const data2 = await deliveryModel.findOne({
         delivery_update: data
     })
