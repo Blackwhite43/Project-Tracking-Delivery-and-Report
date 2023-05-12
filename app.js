@@ -32,6 +32,7 @@ app.use(helmet());
 // The word CORS stands for “Cross-Origin Resource Sharing”. Cross-Origin Resource Sharing is an HTTP-header based mechanism implemented by the browser which allows a server or an API(Application Programming Interface) to indicate any origins (different in terms of protocol, hostname, or port) other than its origin from which the unknown origin gets permission to access and load resources.
 // Bridge between client and server
 app.use(cors({ origin: '*' }))
+app.use(express.static(`${__dirname}/img`))
 
 // Development logging | morgan will logs HTTP requests
 if (process.env.NODE_ENV === 'development') {
