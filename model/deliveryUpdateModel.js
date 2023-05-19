@@ -10,10 +10,6 @@ const deliveryupdateSchema = new mongoose.Schema({
     photo: {
         type: String
     },
-    created_at: {
-        type: Date,
-        default: new Date
-    },
     verification: {
         type: String,
         enum: {
@@ -21,6 +17,6 @@ const deliveryupdateSchema = new mongoose.Schema({
         },
         default: 'Pending'
     }
-})
+}, {timestamps: true})
 const DeliveryUpdate = mongoose.model('deliveryUpdate', deliveryupdateSchema);
 module.exports = DeliveryUpdate;

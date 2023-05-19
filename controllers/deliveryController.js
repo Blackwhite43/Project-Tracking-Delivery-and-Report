@@ -15,14 +15,14 @@ exports.create_delivery_data = catchAsync(async (req, res) => {
     dateEnd.setHours(23,59,59,0);
     await deliveryModel.deleteMany({
         $and: [
-            {created_at:{$gte: dateStart}},
-            {created_at:{$lte: dateEnd}}
+            {createdAt:{$gte: dateStart}},
+            {createdAt:{$lte: dateEnd}}
         ]
     });
     await deliveryUpdateModel.deleteMany({
         $and: [
-            {created_at:{$gte: dateStart}},
-            {created_at:{$lte: dateEnd}}
+            {createdAt:{$gte: dateStart}},
+            {createdAt:{$lte: dateEnd}}
         ]
     });
     await deliveryModel.create(req.body);

@@ -26,15 +26,11 @@ const deliverySchema = new mongoose.Schema({
     instruksi: {
         type: String
     },
-    created_at: {
-        type: Date,
-        default: new Date
-    },
     delivery_update: {
         type: mongoose.Schema.ObjectId,
         ref: 'deliveryUpdate'
     }
-})
+}, {timestamps: true})
 
 deliverySchema.pre('save', async function (next) {
     const update = await deliveryUpdateModel.create({});

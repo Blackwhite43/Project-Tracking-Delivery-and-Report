@@ -4,6 +4,17 @@ const deliveryUpdateModel = require('../model/deliveryUpdateModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+function get_date() {
+    var arr = [];
+    var dateStart = new Date();
+    var dateEnd = new Date();
+    dateStart.setHours(0,0,0,0);
+    dateEnd.setHours(23,59,59,0);
+    arr[0] = dateStart;
+    arr[1] = dateEnd;
+    return arr;
+}
+
 const multerStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, './img');
@@ -41,8 +52,14 @@ exports.saveMedia = (req, res, next) => {
 }
 
 exports.get_data_plat = catchAsync(async (req, res) => {
+    var dateStart = get_date()[0];
+    var dateEnd = get_date()[1];
     const data = await deliveryModel.find({
-        plat_no: req.body.plat_no
+        plat_no: req.body.plat_no,
+        $and: [
+            {createdAt:{$gte: dateStart}},
+            {createdAt:{$lte: dateEnd}}
+        ]
     })
     res.status(200).json({
         status: 'success',
@@ -52,12 +69,18 @@ exports.get_data_plat = catchAsync(async (req, res) => {
 })
 
 exports.get_data_plat_home = catchAsync(async (req, res) => {
+    var dateStart = get_date()[0];
+    var dateEnd = get_date()[1];
     const data = await deliveryUpdateModel.find({
         status_delivery: {$ne: "Delivered"}
     });
     const data2 = await deliveryModel.find({
         plat_no: req.body.plat_no,
-        delivery_update: data
+        delivery_update: data, 
+        $and: [
+            {createdAt:{$gte: dateStart}},
+            {createdAt:{$lte: dateEnd}}
+        ]
     })
     // const temp_plat = window.localStorage.setItem("plat_no", req.body.plat_no);
     res.status(200).json({
@@ -93,10 +116,16 @@ exports.get_update_delivery_data = catchAsync(async (req, res) => {
 })
 
 exports.get_stats = catchAsync(async (req, res) => {
+    var dateStart = get_date()[0];
+    var dateEnd = get_date()[1];
     const data = await deliveryModel.aggregate([
         {
             '$match': {
-                plat_no: req.body.plat_no
+                plat_no: req.body.plat_no,
+                $and: [
+                    {createdAt:{$gte: dateStart}},
+                    {createdAt:{$lte: dateEnd}}
+                ]
             }
         },
         {
