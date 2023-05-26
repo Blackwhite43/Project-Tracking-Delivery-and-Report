@@ -34,9 +34,11 @@ const deliverySchema = new mongoose.Schema({
 
 deliverySchema.pre('save', async function (next) {
     const update = await deliveryUpdateModel.create({});
+    this.plat_no = this.plat_no.toUpperCase();
     this.delivery_update = update;
     next();
 })
+
 deliverySchema.pre(/^find/, function (next) {
     this.populate({
         path: 'delivery_update'

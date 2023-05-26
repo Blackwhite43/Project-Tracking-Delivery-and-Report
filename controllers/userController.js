@@ -55,7 +55,7 @@ exports.get_data_plat = catchAsync(async (req, res) => {
     var dateStart = get_date()[0];
     var dateEnd = get_date()[1];
     const data = await deliveryModel.find({
-        plat_no: req.body.plat_no,
+        plat_no: req.body.plat_no.toUpperCase(),
         $and: [
             {createdAt:{$gte: dateStart}},
             {createdAt:{$lte: dateEnd}}
@@ -75,7 +75,7 @@ exports.get_data_plat_home = catchAsync(async (req, res) => {
         status_delivery: {$ne: "Delivered"}
     });
     const data2 = await deliveryModel.find({
-        plat_no: req.body.plat_no,
+        plat_no: req.body.plat_no.toUpperCase(),
         delivery_update: data, 
         $and: [
             {createdAt:{$gte: dateStart}},
@@ -121,7 +121,7 @@ exports.get_stats = catchAsync(async (req, res) => {
     const data = await deliveryModel.aggregate([
         {
             '$match': {
-                plat_no: req.body.plat_no,
+                plat_no: req.body.plat_no.toUpperCase(),
                 $and: [
                     {createdAt:{$gte: dateStart}},
                     {createdAt:{$lte: dateEnd}}

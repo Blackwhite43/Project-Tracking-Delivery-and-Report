@@ -9,7 +9,7 @@ exports.update_delivery_data = catchAsync(async (req, res) => {
     });
     await deliveryModel.findOneAndUpdate({delivery_update: data}, {
         $set: {
-            plat_no: req.body.plat_no,
+            plat_no: req.body.plat_no.toUpperCase(),
             driver: req.body.driver,
             kenek: req.body.kenek,
             customer: req.body.customer,
