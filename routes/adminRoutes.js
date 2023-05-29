@@ -8,8 +8,8 @@ router.route('/')
     .get(deliveryController.get_alldata)
     .post(adminController.create_delivery_data)
 
-router.route('/today')
-    .get(adminController.get_all_delivery_data_today)
+router.route('/custom-dates')
+    .get(adminController.get_all_delivery_data_dates)
 
 router.route('/:id')
     .get(adminController.get_delivery_data)
