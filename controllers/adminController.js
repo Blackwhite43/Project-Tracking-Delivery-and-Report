@@ -3,6 +3,17 @@ const deliveryUpdateModel = require('../model/deliveryUpdateModel');
 const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 
+function get_date() {
+    var arr = [];
+    var dateStart = new Date();
+    var dateEnd = new Date();
+    dateStart.setHours(0,0,0,0);
+    dateEnd.setHours(23,59,59,0);
+    arr[0] = dateStart;
+    arr[1] = dateEnd;
+    return arr;
+}
+
 exports.update_delivery_data = catchAsync(async (req, res) => {
     const data = await deliveryUpdateModel.findByIdAndUpdate(req.params.id, {
         $set: { verification: req.body.verification }
@@ -31,7 +42,24 @@ exports.get_delivery_data = catchAsync(async (req, res) => {
     })
     res.status(200).json({
         status: 'success',
+        total: data.length,
         data: data2
+    })
+})
+
+exports.get_all_delivery_data_today = catchAsync(async (req, res) => {
+    var dateStart = get_date()[0];
+    var dateEnd = get_date()[1];
+    const data = await deliveryModel.find({
+        $and: [
+            {createdAt:{$gte: dateStart}},
+            {createdAt:{$lte: dateEnd}}
+        ]
+    })
+    res.status(200).json({
+        status: 'success',
+        total: data.length,
+        data: data
     })
 })
 
