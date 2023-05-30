@@ -9,7 +9,7 @@ router.route('/')
     .post(adminController.create_delivery_data)
 
 router.route('/custom-dates')
-    .get(adminController.get_all_delivery_data_dates)
+    .post(adminController.get_all_delivery_data_dates)
 
 router.route('/:id')
     .get(adminController.get_delivery_data)
