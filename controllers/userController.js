@@ -72,7 +72,7 @@ exports.get_data_plat_home = catchAsync(async (req, res) => {
     var dateStart = get_date()[0];
     var dateEnd = get_date()[1];
     const data = await deliveryUpdateModel.find({
-        status_delivery: {$ne: "Delivered"}
+        status_delivery: {$eq: "Ready for Delivery"}
     });
     const data2 = await deliveryModel.find({
         plat_no: req.body.plat_no.toUpperCase(),
