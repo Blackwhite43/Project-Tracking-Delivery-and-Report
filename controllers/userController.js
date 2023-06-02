@@ -92,8 +92,11 @@ exports.get_data_plat_home = catchAsync(async (req, res) => {
 
 exports.update_delivery = catchAsync(async (req, res) => {
     const data = await deliveryUpdateModel.findByIdAndUpdate(req.params.id, {
-        status_delivery: req.body.status_delivery,
-        photo: req.body.photo
+        $set: {
+            status_delivery: req.body.status_delivery,
+            photo: req.body.photo,
+            reason: req.body.reason
+        }
     });
     const data2 = await deliveryModel.findOne({
         delivery_update: data
