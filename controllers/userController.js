@@ -57,8 +57,8 @@ exports.get_data_plat = catchAsync(async (req, res) => {
     const data = await deliveryModel.find({
         plat_no: req.body.plat_no.toUpperCase(),
         $and: [
-            {createdAt:{$gte: dateStart}},
-            {createdAt:{$lte: dateEnd}}
+            {tanggal:{$gte: dateStart}},
+            {tanggal:{$lte: dateEnd}}
         ]
     })
     res.status(200).json({
@@ -78,8 +78,8 @@ exports.get_data_plat_home = catchAsync(async (req, res) => {
         plat_no: req.body.plat_no.toUpperCase(),
         delivery_update: data, 
         $and: [
-            {createdAt:{$gte: dateStart}},
-            {createdAt:{$lte: dateEnd}}
+            {tanggal:{$gte: dateStart}},
+            {tanggal:{$lte: dateEnd}}
         ]
     })
     // const temp_plat = window.localStorage.setItem("plat_no", req.body.plat_no);
@@ -126,8 +126,8 @@ exports.get_stats = catchAsync(async (req, res) => {
             '$match': {
                 plat_no: req.body.plat_no.toUpperCase(),
                 $and: [
-                    {createdAt:{$gte: dateStart}},
-                    {createdAt:{$lte: dateEnd}}
+                    {tanggal:{$gte: dateStart}},
+                    {tanggal:{$lte: dateEnd}}
                 ]
             }
         },
@@ -161,11 +161,6 @@ exports.get_stats = catchAsync(async (req, res) => {
                 'ready_for_delivery': {
                     '$sum': {
                         '$cond': [{'$eq': ['$status', 'Ready for Delivery']}, 1, 0]
-                    }
-                },
-                'out_for_delivery': {
-                    '$sum': {
-                        '$cond': [{'$eq': ['$status', 'Out for Delivery']}, 1, 0]
                     }
                 },
                 'not_delivered': {

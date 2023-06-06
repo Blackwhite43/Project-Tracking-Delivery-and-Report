@@ -6,23 +6,22 @@ const factory = require('./handlerFactory');
 exports.get_alldata = factory.getAll(deliveryModel);
 exports.get_data = factory.getOne(deliveryModel);
 exports.update_data = factory.updateOne(deliveryModel);
-
 exports.create_delivery_data = catchAsync(async (req, res) => {
-    var dateStart = new Date();
-    var dateEnd = new Date();
-    // dateStart.setDate(dateStart.getDate()-1);
-    dateStart.setHours(0,0,0,0);
-    dateEnd.setHours(23,59,59,0);
+    // var dateStart = new Date();
+    // var dateEnd = new Date();
+    // dateStart.setHours(0,0,0,0);
+    // dateEnd.setHours(23,59,59,0);
+    var date = req.body[0].tanggal;
     await deliveryModel.deleteMany({
         $and: [
-            {createdAt:{$gte: dateStart}},
-            {createdAt:{$lte: dateEnd}}
+            {tanggal:{$gte: date}},
+            {tanggal:{$lte: date}}
         ]
     });
     await deliveryUpdateModel.deleteMany({
         $and: [
-            {createdAt:{$gte: dateStart}},
-            {createdAt:{$lte: dateEnd}}
+            {tanggal:{$gte: date}},
+            {tanggal:{$lte: date}}
         ]
     });
     await deliveryModel.create(req.body);

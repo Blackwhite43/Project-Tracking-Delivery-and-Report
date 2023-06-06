@@ -15,5 +15,7 @@ router.route('/:id')
     .get(adminController.get_delivery_data)
     .patch(adminController.update_delivery_data)
     .delete(adminController.delete_delivery_data)
+router.route('/stats')
+    .post(adminController.get_stats)
 
 module.exports = router;

@@ -26,6 +26,9 @@ const deliverySchema = new mongoose.Schema({
     instruksi: {
         type: String
     },
+    tanggal: {
+        type: Date
+    },
     delivery_update: {
         type: mongoose.Schema.ObjectId,
         ref: 'deliveryUpdate'
@@ -33,7 +36,7 @@ const deliverySchema = new mongoose.Schema({
 }, {timestamps: true})
 
 deliverySchema.pre('save', async function (next) {
-    const update = await deliveryUpdateModel.create({});
+    const update = await deliveryUpdateModel.create({tanggal: this.tanggal});
     this.plat_no = this.plat_no.toUpperCase();
     this.delivery_update = update;
     next();

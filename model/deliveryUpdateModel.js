@@ -19,6 +19,9 @@ const deliveryupdateSchema = new mongoose.Schema({
             values: ["Verified by Delivery Team", "Pending"]
         },
         default: 'Pending'
+    },
+    tanggal: {
+        type: Date
     }
 }, {timestamps: true})
 const DeliveryUpdate = mongoose.model('deliveryUpdate', deliveryupdateSchema);

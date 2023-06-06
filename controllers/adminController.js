@@ -14,6 +14,67 @@ function get_date(start, end) {
     return arr;
 }
 
+exports.get_stats = catchAsync(async (req, res) => {
+    var date = get_date(req.body.date_start, req.body.date_end);
+    var dateStart = date[0];
+    var dateEnd = date[1];
+    const data = await deliveryModel.aggregate([
+        {
+            '$match': {
+                $and: [
+                    {tanggal:{$gte: dateStart}},
+                    {tanggal:{$lte: dateEnd}}
+                ]
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'deliveryupdates', 
+                'localField': 'delivery_update', 
+                'foreignField': '_id', 
+                'as': 'lastStatus'
+            }
+        },
+        {
+            '$addFields': {
+                'status': {
+                    '$first': '$lastStatus.status_delivery'
+                }
+            }
+        },
+        {
+            '$group': {
+                '_id': {
+                    plat_no: '$plat_no',
+                    driver: "$driver",
+                    kenek: "$kenek",
+                }, 
+                'delivered': {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Delivered']}, 1, 0]
+                    }
+                },
+                'ready_for_delivery': {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Ready for Delivery']}, 1, 0]
+                    }
+                },
+                'not_delivered': {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Not Delivered']}, 1, 0]
+                    }
+                }
+            }
+        }
+    ])
+    // console.log(data);
+    res.status(200).json({
+        status: 'success',
+        total: data.length,
+        data: data
+    })
+})
+
 exports.update_delivery_data = catchAsync(async (req, res) => {
     const data = await deliveryUpdateModel.findByIdAndUpdate(req.params.id, {
         $set: { verification: req.body.verification }
@@ -49,13 +110,13 @@ exports.get_delivery_data = catchAsync(async (req, res) => {
 
 exports.get_all_delivery_data_dates = catchAsync(async (req, res) => {
     var date = get_date(req.body.date_start, req.body.date_end);
-    var dateStart = date[0]
+    var dateStart = date[0];
     var dateEnd = date[1];
-    console.log(dateStart, dateEnd);
+    // console.log(dateStart, dateEnd);
     const data = await deliveryModel.find({
         $and: [
-            {createdAt:{$gte: dateStart}},
-            {createdAt:{$lte: dateEnd}}
+            {tanggal:{$gte: dateStart}},
+            {tanggal:{$lte: dateEnd}}
         ]
     })
     res.status(200).json({
