@@ -82,6 +82,22 @@ exports.saveMedia = async (req, res, next) => {
     }
 }
 
+exports.get_file = async (req, res, next) => {
+    var temp_id;
+    const data = await deliveryUpdateModel.findById(req.params.id);
+    const auth = driveAuth.getDriveService();
+    const drive = await google.drive({version: "v3", auth}).files.list();
+    drive.data.files.map(index => {
+        if (index.name == data.photo) {
+            temp_id = index.id;
+        }
+    })
+    res.status(200).json({
+        status: 'success',
+        id: temp_id
+    })
+}
+
 exports.get_data_plat = catchAsync(async (req, res) => {
     var dateStart = get_date()[0];
     var dateEnd = get_date()[1];

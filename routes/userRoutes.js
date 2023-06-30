@@ -1,6 +1,5 @@
 const express = require('express');
 const userController = require('../controllers/userController');
-const multer = require('multer');
 
 const router = express.Router();
 
@@ -14,4 +13,6 @@ router.route('/update-delivery/:id')
     .patch(userController.uploadProblemsMedia, userController.saveMedia, userController.update_delivery)
 router.route('/stats')
     .post(userController.get_stats)
+router.route('/get-files/:id')
+    .get(userController.get_file)
 module.exports = router;
