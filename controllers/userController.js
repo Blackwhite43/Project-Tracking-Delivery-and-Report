@@ -50,7 +50,6 @@ const multerStorage = multer.diskStorage({
         const plat_no = data2.plat_no.split(" ");
         const ext = file.mimetype.split('/')[1];
         const time = moment().format("DD:MM:YYYY:HH:mm:ss").split(":");
-        console.log(time);
         const name = `update-${plat_no[0]}_${plat_no[1]}_${plat_no[2]}-${time[0]}_${time[1]}_${time[2]}-${time[3]}_${time[4]}_${time[5]}.${ext}`;
         cb(null, name)
     }
