@@ -1,8 +1,13 @@
-const multer = require('multer');
 const deliveryModel = require('../model/deliveryModel');
 const deliveryUpdateModel = require('../model/deliveryUpdateModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const moment = require('moment/moment');
+const multer = require("multer");
+const driveAuth = require("../Google_Drive/DriveService");
+const Stream = require('stream');
+const { google } = require('googleapis');
+const fs = require('fs');
 
 function get_date() {
     var arr = [];
@@ -15,13 +20,39 @@ function get_date() {
     return arr;
 }
 
+const uploadFile = async (file) => {
+    const folderId = ["1G4oRLYkr0r4L1DuQqBumOiVSWEggRdTq"];
+    const bufferStream = fs.createReadStream(file.path);
+    const auth = driveAuth.getDriveService();
+    const { data } = await google.drive({version: "v3", auth}).files.create({
+        resource: {
+            name: file.filename,
+            parents: folderId
+        },
+        media: {
+            mimeType: file.mimetype,
+            body: bufferStream
+        },
+        fields: "id, name"
+    })
+    // console.log(data);
+}
+
 const multerStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './img');
-    },
-    filename: (req, file, cb) => {
+    // destination: (req, file, cb) => {
+    //     cb(null, './img');
+    // },
+    filename: async (req, file, cb) => {
+        const data = await deliveryUpdateModel.findById(req.params.id);
+        const data2 = await deliveryModel.findOne({
+            delivery_update: data
+        })
+        const plat_no = data2.plat_no.split(" ");
         const ext = file.mimetype.split('/')[1];
-        cb(null, `update-${req.params.id}-${Date.now()}.${ext}`)
+        const time = moment().format("DD:MM:YYYY:HH:mm:ss").split(":");
+        console.log(time);
+        const name = `update-${plat_no[0]}_${plat_no[1]}_${plat_no[2]}-${time[0]}_${time[1]}_${time[2]}-${time[3]}_${time[4]}_${time[5]}.${ext}`;
+        cb(null, name)
     }
 })
 
@@ -41,12 +72,13 @@ const upload = multer({
 
 exports.uploadProblemsMedia = upload.single('photo');
 
-exports.saveMedia = (req, res, next) => {
+exports.saveMedia = async (req, res, next) => {
     if (!req.file) {
         return next();
     }
     else {
-        req.body.photo = req.file.filename
+        await uploadFile(req.file);
+        req.body.photo = req.file.filename;
         next();
     }
 }
@@ -82,7 +114,6 @@ exports.get_data_plat_home = catchAsync(async (req, res) => {
             {tanggal:{$lte: dateEnd}}
         ]
     })
-    // const temp_plat = window.localStorage.setItem("plat_no", req.body.plat_no);
     res.status(200).json({
         status: 'success',
         total: data2.length,
