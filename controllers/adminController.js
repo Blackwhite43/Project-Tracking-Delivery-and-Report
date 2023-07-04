@@ -75,6 +75,58 @@ exports.get_stats = catchAsync(async (req, res) => {
     })
 })
 
+exports.get_driver_stats = catchAsync(async (req, res, next) => {
+    var date = get_date(req.body.date_start, req.body.date_end);
+    var dateStart = date[0];
+    var dateEnd = date[1];
+    const doc = await deliveryModel.aggregate([
+        {
+            $match: {
+                $and: [
+                    {tanggal:{$gte: dateStart}},
+                    {tanggal:{$lte: dateEnd}}
+                ]
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'deliveryupdates', 
+                'localField': 'delivery_update', 
+                'foreignField': '_id', 
+                'as': 'lastStatus'
+            }
+        },
+        {
+            '$addFields': {
+                'status': {
+                    '$first': '$lastStatus.verification'
+                }
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    driver: "$driver"
+                },
+                pending: {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Pending']}, 1, 0]
+                    }
+                },
+                verified_by_delivery_team: {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Verified by Delivery Team']}, 1, 0]
+                    }
+                }
+            }
+        }
+    ]);
+    res.status(200).json({
+        status: 'Success',
+        data: doc
+    });
+})
+
 exports.update_delivery_data = catchAsync(async (req, res) => {
     const data = await deliveryUpdateModel.findByIdAndUpdate(req.params.id, {
         $set: { verification: req.body.verification }

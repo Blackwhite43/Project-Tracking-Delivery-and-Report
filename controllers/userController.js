@@ -5,7 +5,6 @@ const AppError = require('../utils/appError');
 const moment = require('moment/moment');
 const multer = require("multer");
 const driveAuth = require("../Google_Drive/DriveService");
-const Stream = require('stream');
 const { google } = require('googleapis');
 const fs = require('fs');
 
@@ -35,13 +34,9 @@ const uploadFile = async (file) => {
         },
         fields: "id, name"
     })
-    // console.log(data);
 }
 
 const multerStorage = multer.diskStorage({
-    // destination: (req, file, cb) => {
-    //     cb(null, './img');
-    // },
     filename: async (req, file, cb) => {
         const data = await deliveryUpdateModel.findById(req.params.id);
         const data2 = await deliveryModel.findOne({
@@ -50,7 +45,7 @@ const multerStorage = multer.diskStorage({
         const plat_no = data2.plat_no.split(" ");
         const ext = file.mimetype.split('/')[1];
         const time = moment().format("DD:MM:YYYY:HH:mm:ss").split(":");
-        const name = `update-${plat_no[0]}_${plat_no[1]}_${plat_no[2]}-${time[0]}_${time[1]}_${time[2]}-${time[3]}_${time[4]}_${time[5]}.${ext}`;
+        const name = `update-${plat_no[0]}_${plat_no[1]}_${plat_no[2]}-${time[2]}_${time[1]}_${time[0]}-${time[3]}_${time[4]}_${time[5]}.${ext}`;
         cb(null, name)
     }
 })
@@ -82,7 +77,7 @@ exports.saveMedia = async (req, res, next) => {
     }
 }
 
-exports.get_file = async (req, res, next) => {
+exports.get_file = catchAsync(async (req, res, next) => {
     var temp_id;
     const data = await deliveryUpdateModel.findById(req.params.id);
     const auth = driveAuth.getDriveService();
@@ -96,7 +91,7 @@ exports.get_file = async (req, res, next) => {
         status: 'success',
         id: temp_id
     })
-}
+})
 
 exports.get_data_plat = catchAsync(async (req, res) => {
     var dateStart = get_date()[0];
