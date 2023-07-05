@@ -117,6 +117,11 @@ exports.get_driver_stats = catchAsync(async (req, res, next) => {
                     '$sum': {
                         '$cond': [{'$eq': ['$status', 'Verified by Delivery Team']}, 1, 0]
                     }
+                },
+                tips: {
+                    '$sum': {
+                        '$cond': [{'$eq': ['$status', 'Verified by Delivery Team']}, req.body.tips, 0]
+                    }
                 }
             }
         }
