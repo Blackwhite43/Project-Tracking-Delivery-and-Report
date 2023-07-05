@@ -159,6 +159,26 @@ exports.get_update_delivery_data = catchAsync(async (req, res) => {
     })
 })
 
+exports.check_exists = catchAsync(async (req, res) => {
+    var flag = false;
+    const data = await deliveryModel.aggregate([
+        {
+            $group: {
+                _id: "$plat_no"
+            }
+        }
+    ])
+    data.map(index => {
+        if (req.body.plat_no.toUpperCase() == index._id) {
+            flag = true;
+        }
+    })
+    res.status(200).json({
+        status: "Success",
+        data: flag
+    })
+})
+
 exports.get_stats = catchAsync(async (req, res) => {
     var dateStart = get_date()[0];
     var dateEnd = get_date()[1];
